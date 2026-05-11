@@ -197,6 +197,10 @@ const formatDate = (date: string) => {
   color: #333;
 }
 
+.desktop-only {
+  display: block;
+}
+
 .mobile-only {
   display: none;
 }
