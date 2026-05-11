@@ -198,17 +198,17 @@ const formatDate = (date: string) => {
 }
 
 .desktop-only {
-  display: block;
-}
-
-.mobile-only {
-  display: none;
+  display: table;
 }
 
 .mobile-cards {
   margin-top: 1rem;
   display: grid;
   gap: 0.9rem;
+}
+
+.mobile-only {
+  display: none;
 }
 
 .match-card {
