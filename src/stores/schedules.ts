@@ -11,17 +11,17 @@ export const useSchedulesStore = defineStore('schedules', () => {
   async function fetchSchedules() {
     console.log("Fetching schedules...");
     try {
-      const response = await axios.get(schedulesApiUrl);
+      const response = await axios.get(`${schedulesApiUrl}/schedules`);
       schedules.value = response.data;
     } catch (error) {
       console.error("Erreur de récupération des horaires :", error);
     }
   }
 
-  async function createSchedule(schedule: Schedule) {
-    await axios.post(schedulesApiUrl, schedule);
+  async function createSchedules(schedules: Schedule[]) {
+    await axios.post(`${schedulesApiUrl}/v2/schedules`, schedules);
     await fetchSchedules();
   }
 
-  return { schedules, fetchSchedules, createSchedule };
+  return { schedules, fetchSchedules, createSchedules };
 });

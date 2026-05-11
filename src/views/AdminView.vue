@@ -103,13 +103,14 @@ const submitSchedule = async () => {
   isSaving.value = true;
 
   try {
-    await scheduleStore.createSchedule({
+    const newSchedule = {
       date: form.date,
       games: form.games.map((game) => ({
         ...game,
         score: game.score || '',
       })),
-    });
+    };
+    await scheduleStore.createSchedules([ newSchedule, ...scheduleStore.schedules ]);
 
     successMessage.value = 'Schedule ajouté avec succès.';
     form.date = '';
