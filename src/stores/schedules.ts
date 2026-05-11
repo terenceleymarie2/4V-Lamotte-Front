@@ -12,7 +12,7 @@ export const useSchedulesStore = defineStore('schedules', () => {
     console.log("Fetching schedules...");
     try {
       const response = await axios.get(schedulesApiUrl);
-      schedules.value = response.data?.default;
+      schedules.value = response.data;
     } catch (error) {
       console.error("Erreur de récupération des horaires :", error);
     }
