@@ -9,7 +9,7 @@ export const useSchedulesStore = defineStore('schedules', () => {
     console.log("Fetching schedules...");
     try {
       const response = await axios.get(`https://4-v-lamotte-back-3tdm.vercel.app/schedules`);
-      schedules.value = response.data;
+      schedules.value = response.data?.default;
     } catch (error) {
       console.error("Erreur de récupération des horaires :", error);
     }
