@@ -18,4 +18,18 @@ const router = createRouter({
   ],
 });
 
+router.beforeEach((to, from, next) => {
+  if (to.path === '/admin') {
+    const password = prompt('Code d\'accès :');
+    if (password === 'azertyuiop') {
+      next();
+    } else {
+      alert('Accès refusé');
+      next('/');
+    }
+  } else {
+    next();
+  }
+});
+
 export default router;
