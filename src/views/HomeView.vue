@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { useSchedulesStore } from '../stores/schedules';
 import type { Schedule } from '../models/schedule';
+import type { Game } from '../models/schedule';
 import ScheduleDayGroup from '../components/ScheduleDayGroup.vue';
 
+const router = useRouter();
 const scheduleStore = useSchedulesStore();
 const schedules = computed<Schedule[]>(() => scheduleStore.schedules);
 const isAdmin = computed(() => scheduleStore.isAdmin);
@@ -36,6 +39,11 @@ const formatDate = (date: string) => {
     year: 'numeric',
   });
 };
+
+const handleEditGame = (game: Game, scheduleDate: string) => {
+  scheduleStore.editTarget = { ...game, date: scheduleDate };
+  router.push('/admin');
+};
 </script>
 
 <template>
@@ -63,6 +71,7 @@ const formatDate = (date: string) => {
         :format-date="formatDate"
         :is-admin="isAdmin"
         @delete-game="scheduleStore.deleteGame"
+        @edit-game="handleEditGame"
       />
     </section>
   </main>

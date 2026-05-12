@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSchedulesStore } from '../stores/schedules';
 import type { CreateScheduleRequest } from '../models/scheduleRemote';
+import { format, parse } from "date-fns";
 
 const router = useRouter();
 const scheduleStore = useSchedulesStore();
 const isSaving = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
+
+// Edit mode: populated when coming from the pencil icon
+const editId = ref<number | null>(null);
+const isEditMode = computed(() => editId.value !== null);
 
 const categories = [
     "Moustiques Elite",
@@ -69,6 +74,23 @@ const form = reactive<CreateScheduleRequest>({
   ...createEmptyGame(),
 });
 
+onMounted(() => {
+  const target = scheduleStore.editTarget;
+  if (target?.id != null) {
+    const date = parse(target.date, "EEEE dd/MM/yyyy", new Date());
+    editId.value = target.id;
+    Object.assign(form, {
+      date: format(date, "yyyy-MM-dd"),
+      category: target.category,
+      hour: target.hour,
+      field: target.field,
+      teamA: target.teamA,
+      teamB: target.teamB,
+    });
+    scheduleStore.editTarget = null;
+  }
+});
+
 const canSubmit = computed(() => {
   return Boolean(form.date && form.category && form.hour && form.field && form.teamA && form.teamB);
 });
@@ -85,14 +107,19 @@ const submitSchedule = async () => {
   isSaving.value = true;
 
   try {
-    await scheduleStore.createSchedule(form);
-
-    successMessage.value = 'Schedule ajouté avec succès.';
+    if (isEditMode.value) {
+      await scheduleStore.patchGame(editId.value!, form);
+      successMessage.value = 'Schedule modifié avec succès.';
+    } else {
+      await scheduleStore.createSchedule(form);
+      successMessage.value = 'Schedule ajouté avec succès.';
+    }
     Object.assign(form, createEmptyGame());
+    editId.value = null;
     await router.push('/');
   } catch (error) {
-    console.error('Erreur lors de la création du schedule :', error);
-    errorMessage.value = 'Impossible de créer le schedule.';
+    console.error('Erreur lors de la sauvegarde du schedule :', error);
+    errorMessage.value = 'Impossible de sauvegarder le schedule.';
   } finally {
     isSaving.value = false;
   }
@@ -105,8 +132,8 @@ const submitSchedule = async () => {
       <header class="admin-header">
         <div>
           <p class="admin-header__eyebrow">Administration</p>
-          <h1>Ajouter un schedule</h1>
-          <p class="admin-header__subtitle">Crée une nouvelle rencontre.</p>
+          <h1>{{ isEditMode ? 'Modifier un schedule' : 'Ajouter un schedule' }}</h1>
+          <p class="admin-header__subtitle">{{ isEditMode ? 'Modifiez les informations de la rencontre.' : 'Crée une nouvelle rencontre.' }}</p>
         </div>
 
         <RouterLink class="admin-header__back" to="/">Retour au planning</RouterLink>
@@ -149,11 +176,16 @@ const submitSchedule = async () => {
             <span>Équipe B</span>
             <input v-model="form.teamB" type="text" placeholder="4V CM" />
           </label>
+
+          <label class="field field--wide" v-if="isEditMode">
+            <span>Score</span>
+            <input v-model="form.score" type="text" placeholder="0 - 0" />
+          </label>
         </div>
 
         <div class="actions">
           <button class="primary-button" type="submit" :disabled="isSaving || !canSubmit">
-            {{ isSaving ? 'Création...' : 'Créer le schedule' }}
+            {{ isSaving ? 'Sauvegarde...' : isEditMode ? 'Enregistrer les modifications' : 'Créer le schedule' }}
           </button>
         </div>
       </form>

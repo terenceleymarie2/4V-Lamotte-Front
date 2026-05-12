@@ -1,14 +1,15 @@
 import axios from 'axios';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { Schedule } from '../models/schedule';
-import type { CreateScheduleRequest } from '../models/scheduleRemote';
+import type { Schedule, Game } from '../models/schedule';
+import type { CreateScheduleRequest, PatchScheduleRequest } from '../models/scheduleRemote';
 
 const schedulesApiUrl = import.meta.env.VITE_API_URL;
 
 export const useSchedulesStore = defineStore('schedules', () => {
   const schedules = ref<Schedule[]>([]);
   const isAdmin = ref(sessionStorage.getItem('isAdmin') === 'true');
+  const editTarget = ref<(Game & { date: string }) | null>(null);
   
   async function fetchSchedules() {
     console.log("Fetching schedules...");
@@ -30,5 +31,10 @@ export const useSchedulesStore = defineStore('schedules', () => {
     await fetchSchedules();
   }
 
-  return { schedules, isAdmin, fetchSchedules, createSchedule, deleteGame };
+  async function patchGame(id: number, data: PatchScheduleRequest) {
+    await axios.patch(`${schedulesApiUrl}/v2/schedules/${id}`, data);
+    await fetchSchedules();
+  }
+
+  return { schedules, isAdmin, editTarget, fetchSchedules, createSchedule, deleteGame, patchGame };
 });

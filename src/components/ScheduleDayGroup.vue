@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Schedule } from '../models/schedule';
+import type { Schedule, Game } from '../models/schedule';
 
 defineProps<{
   schedule: Schedule;
@@ -9,12 +9,16 @@ defineProps<{
 
 const emit = defineEmits<{
   'delete-game': [id: number];
+  'edit-game': [game: Game, scheduleDate: string];
 }>();
 </script>
 
 <template>
   <div>
-    <h2 class="day-group__title">{{ formatDate(schedule.date) }}</h2>
+    <div class="day-group__header">
+      <h2 class="day-group__title">{{ formatDate(schedule.date) }}</h2>
+      <RouterLink class="add-btn" to="/admin">+ Ajouter</RouterLink>
+    </div>
 
     <div v-if="schedule.games.length === 0" class="day-group__empty">
       Aucun match programmé.
@@ -46,7 +50,19 @@ const emit = defineEmits<{
           <td v-if="isAdmin" class="delete-cell">
             <button
               v-if="game.id != null"
-              class="delete-btn"
+              class="action-btn action-btn--edit"
+              title="Modifier ce match"
+              type="button"
+              @click="emit('edit-game', game, schedule.date)"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+            <button
+              v-if="game.id != null"
+              class="action-btn action-btn--delete"
               title="Supprimer ce match"
               type="button"
               @click="emit('delete-game', game.id!)"
@@ -72,21 +88,33 @@ const emit = defineEmits<{
       >
         <div class="match-card__top">
           <h3 class="match-card__title">{{ game.teamA }} vs {{ game.teamB }}</h3>
-          <button
-            v-if="isAdmin && game.id != null"
-            class="delete-btn delete-btn--card"
-            title="Supprimer ce match"
-            type="button"
-            @click="emit('delete-game', game.id!)"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"/>
-              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-              <path d="M10 11v6"/>
-              <path d="M14 11v6"/>
-              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-            </svg>
-          </button>
+          <div v-if="isAdmin && game.id != null" class="match-card__actions">
+            <button
+              class="action-btn action-btn--edit action-btn--card"
+              title="Modifier ce match"
+              type="button"
+              @click="emit('edit-game', game, schedule.date)"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+            <button
+              class="action-btn action-btn--delete action-btn--card"
+              title="Supprimer ce match"
+              type="button"
+              @click="emit('delete-game', game.id!)"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6"/>
+                <path d="M14 11v6"/>
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <dl class="match-card__details">
@@ -113,10 +141,34 @@ const emit = defineEmits<{
 </template>
 
 <style scoped>
+.day-group__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.7rem;
+}
+
 .day-group__title {
-  margin: 0 0 0.7rem;
+  margin: 0;
   color: #d10000;
   font-size: 1.15rem;
+}
+
+.add-btn {
+  flex-shrink: 0;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: #cf3d3d;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.add-btn:hover {
+  background: #b83333;
 }
 
 .day-group__empty {
@@ -191,6 +243,12 @@ const emit = defineEmits<{
   margin-bottom: 0.75rem;
 }
 
+.match-card__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
 .match-card__date {
   margin: 0 0 0.3rem;
   color: #1f6f53;
@@ -204,13 +262,14 @@ const emit = defineEmits<{
   color: #163528;
 }
 
-/* ── Delete button ─────────────────────────────────────── */
+/* ── Action buttons (edit / delete) ───────────────────── */
 .delete-cell {
-  width: 2.5rem;
-  text-align: center;
+  width: 5rem;
+  text-align: right;
+  white-space: nowrap;
 }
 
-.delete-btn {
+.action-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -218,17 +277,29 @@ const emit = defineEmits<{
   border: none;
   border-radius: 8px;
   background: transparent;
-  color: #c0392b;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.delete-btn:hover {
+.action-btn--edit {
+  color: #1a6fb5;
+}
+
+.action-btn--edit:hover {
+  background: #eef4fd;
+  color: #0f4f88;
+}
+
+.action-btn--delete {
+  color: #c0392b;
+}
+
+.action-btn--delete:hover {
   background: #fff0f0;
   color: #922b21;
 }
 
-.delete-btn--card {
+.action-btn--card {
   flex-shrink: 0;
   margin-top: 0.1rem;
 }
