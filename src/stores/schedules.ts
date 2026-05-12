@@ -8,6 +8,7 @@ const schedulesApiUrl = import.meta.env.VITE_API_URL;
 
 export const useSchedulesStore = defineStore('schedules', () => {
   const schedules = ref<Schedule[]>([]);
+  const isAdmin = ref(false);
   
   async function fetchSchedules() {
     console.log("Fetching schedules...");
@@ -24,5 +25,10 @@ export const useSchedulesStore = defineStore('schedules', () => {
     await fetchSchedules();
   }
 
-  return { schedules, fetchSchedules, createSchedule };
+  async function deleteGame(id: number) {
+    await axios.delete(`${schedulesApiUrl}/v2/schedules/${id}`);
+    await fetchSchedules();
+  }
+
+  return { schedules, isAdmin, fetchSchedules, createSchedule, deleteGame };
 });

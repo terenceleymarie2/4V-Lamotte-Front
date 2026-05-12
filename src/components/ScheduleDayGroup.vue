@@ -4,6 +4,11 @@ import type { Schedule } from '../models/schedule';
 defineProps<{
   schedule: Schedule;
   formatDate: (date: string) => string;
+  isAdmin?: boolean;
+}>();
+
+const emit = defineEmits<{
+  'delete-game': [id: number];
 }>();
 </script>
 
@@ -24,6 +29,7 @@ defineProps<{
           <th>Équipe A</th>
           <th>Équipe B</th>
           <th>Score</th>
+          <th v-if="isAdmin"></th>
         </tr>
       </thead>
       <tbody>
@@ -37,6 +43,23 @@ defineProps<{
           <td>{{ game.teamA }}</td>
           <td>{{ game.teamB }}</td>
           <td>{{ game.score || '-' }}</td>
+          <td v-if="isAdmin" class="delete-cell">
+            <button
+              v-if="game.id != null"
+              class="delete-btn"
+              title="Supprimer ce match"
+              type="button"
+              @click="emit('delete-game', game.id!)"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6"/>
+                <path d="M14 11v6"/>
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+              </svg>
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -47,7 +70,24 @@ defineProps<{
         :key="`${schedule.date}-${game.hour}-${game.field}-${gameIndex}`"
         class="match-card"
       >
-        <h3 class="match-card__title">{{ game.teamA }} vs {{ game.teamB }}</h3>
+        <div class="match-card__top">
+          <h3 class="match-card__title">{{ game.teamA }} vs {{ game.teamB }}</h3>
+          <button
+            v-if="isAdmin && game.id != null"
+            class="delete-btn delete-btn--card"
+            title="Supprimer ce match"
+            type="button"
+            @click="emit('delete-game', game.id!)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+              <path d="M10 11v6"/>
+              <path d="M14 11v6"/>
+              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+            </svg>
+          </button>
+        </div>
 
         <dl class="match-card__details">
           <div>
@@ -143,6 +183,14 @@ defineProps<{
   box-shadow: 0 6px 18px rgba(207, 61, 61, 0.12);
 }
 
+.match-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
 .match-card__date {
   margin: 0 0 0.3rem;
   color: #1f6f53;
@@ -151,9 +199,38 @@ defineProps<{
 }
 
 .match-card__title {
-  margin: 0 0 0.75rem;
+  margin: 0;
   font-size: 1rem;
   color: #163528;
+}
+
+/* ── Delete button ─────────────────────────────────────── */
+.delete-cell {
+  width: 2.5rem;
+  text-align: center;
+}
+
+.delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #c0392b;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.delete-btn:hover {
+  background: #fff0f0;
+  color: #922b21;
+}
+
+.delete-btn--card {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
 }
 
 .match-card__details {

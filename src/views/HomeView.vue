@@ -6,6 +6,7 @@ import ScheduleDayGroup from '../components/ScheduleDayGroup.vue';
 
 const scheduleStore = useSchedulesStore();
 const schedules = computed<Schedule[]>(() => scheduleStore.schedules);
+const isAdmin = computed(() => scheduleStore.isAdmin);
 const loading = ref(true);
 
 const groupedSchedules = computed<Schedule[]>(() => {
@@ -57,7 +58,12 @@ const formatDate = (date: string) => {
       :key="`${schedule.date}-${scheduleIndex}`"
       class="day-group"
     >
-      <ScheduleDayGroup :schedule="schedule" :format-date="formatDate" />
+      <ScheduleDayGroup
+        :schedule="schedule"
+        :format-date="formatDate"
+        :is-admin="isAdmin"
+        @delete-game="scheduleStore.deleteGame"
+      />
     </section>
   </main>
 </template>
