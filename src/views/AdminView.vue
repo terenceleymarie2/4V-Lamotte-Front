@@ -86,6 +86,7 @@ onMounted(() => {
       field: target.field,
       teamA: target.teamA,
       teamB: target.teamB,
+      score: target.score
     });
     scheduleStore.editTarget = null;
   }
