@@ -8,7 +8,7 @@ const schedulesApiUrl = import.meta.env.VITE_API_URL;
 
 export const useSchedulesStore = defineStore('schedules', () => {
   const schedules = ref<Schedule[]>([]);
-  const isAdmin = ref(false);
+  const isAdmin = ref(sessionStorage.getItem('isAdmin') === 'true');
   
   async function fetchSchedules() {
     console.log("Fetching schedules...");
