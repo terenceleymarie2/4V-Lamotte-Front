@@ -2,7 +2,7 @@
 import { computed, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSchedulesStore } from '../stores/schedules';
-import type { Game, Schedule } from '../models/schedule';
+import type { CreateScheduleRequest } from '../models/scheduleRemote';
 
 const router = useRouter();
 const scheduleStore = useSchedulesStore();
@@ -55,66 +55,40 @@ const categories = [
     "Coupe de France Feminine"
 ];
 
-const createEmptyGame = (): Game => ({
-  category: '',
-  hour: '',
-  field: '',
-  teamA: '',
-  teamB: '',
-  score: '',
+
+const createEmptyGame = (): CreateScheduleRequest => ({
+  date: "",
+  category: "",
+  hour: "",
+  field: "",
+  teamA: "",
+  teamB: "",
 });
 
-const form = reactive<Schedule>({
-  date: '',
-  games: [createEmptyGame()],
+const form = reactive<CreateScheduleRequest>({
+  ...createEmptyGame(),
 });
 
 const canSubmit = computed(() => {
-  return Boolean(form.date && form.games.length > 0);
+  return Boolean(form.date && form.category && form.hour && form.field && form.teamA && form.teamB);
 });
-
-const addGame = () => {
-  form.games.push(createEmptyGame());
-};
-
-const removeGame = (index: number) => {
-  if (form.games.length === 1) {
-    form.games[0] = createEmptyGame();
-    return;
-  }
-
-  form.games.splice(index, 1);
-};
 
 const submitSchedule = async () => {
   errorMessage.value = '';
   successMessage.value = '';
 
-  if (!form.date) {
-    errorMessage.value = 'La date est obligatoire.';
-    return;
-  }
-
-  if (form.games.some((game) => !game.hour || !game.field || !game.teamA || !game.teamB)) {
-    errorMessage.value = 'Chaque match doit au moins avoir une heure, un terrain et deux équipes.';
+  if (!form.date || !form.category || !form.hour || !form.field || !form.teamA || !form.teamB) {
+    errorMessage.value = 'Tous les champs sont obligatoires.';
     return;
   }
 
   isSaving.value = true;
 
   try {
-    const newSchedule = {
-      date: form.date,
-      games: form.games.map((game) => ({
-        ...game,
-        score: game.score || '',
-      })),
-    };
-    await scheduleStore.createSchedules([ newSchedule, ...scheduleStore.schedules ]);
+    await scheduleStore.createSchedule(form);
 
     successMessage.value = 'Schedule ajouté avec succès.';
-    form.date = '';
-    form.games = [createEmptyGame()];
+    Object.assign(form, createEmptyGame());
     await router.push('/');
   } catch (error) {
     console.error('Erreur lors de la création du schedule :', error);
@@ -132,7 +106,7 @@ const submitSchedule = async () => {
         <div>
           <p class="admin-header__eyebrow">Administration</p>
           <h1>Ajouter un schedule</h1>
-          <p class="admin-header__subtitle">Crée une nouvelle journée et ses rencontres.</p>
+          <p class="admin-header__subtitle">Crée une nouvelle rencontre.</p>
         </div>
 
         <RouterLink class="admin-header__back" to="/">Retour au planning</RouterLink>
@@ -143,58 +117,39 @@ const submitSchedule = async () => {
 
       <form class="schedule-form" @submit.prevent="submitSchedule">
         <label class="field">
-          <span>Date du schedule</span>
+          <span>Date de la rencontre</span>
           <input v-model="form.date" type="date" />
         </label>
 
-        <div class="games-header">
-          <h2>Rencontres</h2>
-          <button type="button" class="ghost-button" @click="addGame">Ajouter un match</button>
+        <div class="grid">
+          <label class="field">
+            <span>Catégorie</span>
+            <select v-model="form.category">
+              <option value="" disabled>Sélectionner une catégorie</option>
+              <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Heure</span>
+            <input v-model="form.hour" type="text" placeholder="09:30" />
+          </label>
+
+          <label class="field">
+            <span>Terrain</span>
+            <input v-model="form.field" type="text" placeholder="22A" />
+          </label>
+
+          <label class="field field--wide">
+            <span>Équipe A</span>
+            <input v-model="form.teamA" type="text" placeholder="4V CC" />
+          </label>
+
+          <label class="field field--wide">
+            <span>Équipe B</span>
+            <input v-model="form.teamB" type="text" placeholder="4V CM" />
+          </label>
         </div>
-
-        <article v-for="(game, index) in form.games" :key="index" class="game-card">
-          <div class="game-card__header">
-            <h3>Match {{ index + 1 }}</h3>
-            <button type="button" class="ghost-button ghost-button--danger" @click="removeGame(index)">
-              Supprimer
-            </button>
-          </div>
-
-          <div class="grid">
-            <label class="field">
-              <span>Catégorie</span>
-              <select v-model="game.category">
-                <option value="" disabled>Sélectionner une catégorie</option>
-                <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
-              </select>
-            </label>
-
-            <label class="field">
-              <span>Heure</span>
-              <input v-model="game.hour" type="text" placeholder="09:30" />
-            </label>
-
-            <label class="field">
-              <span>Terrain</span>
-              <input v-model="game.field" type="text" placeholder="22A" />
-            </label>
-
-            <label class="field">
-              <span>Score</span>
-              <input v-model="game.score" type="text" placeholder="2 - 1" />
-            </label>
-
-            <label class="field field--wide">
-              <span>Équipe A</span>
-              <input v-model="game.teamA" type="text" placeholder="4V CC" />
-            </label>
-
-            <label class="field field--wide">
-              <span>Équipe B</span>
-              <input v-model="game.teamB" type="text" placeholder="4V CM" />
-            </label>
-          </div>
-        </article>
 
         <div class="actions">
           <button class="primary-button" type="submit" :disabled="isSaving || !canSubmit">
@@ -207,62 +162,74 @@ const submitSchedule = async () => {
 </template>
 
 <style scoped>
+/* ── Page layout ──────────────────────────────────────── */
 .admin-page {
   min-height: 100vh;
-  padding: 2rem;
+  padding: 2.5rem 1.5rem;
   background:
-    radial-gradient(circle at top left, rgba(207, 61, 61, 0.14), transparent 30%),
-    linear-gradient(180deg, #fffaf9 0%, #ffffff 100%);
+    radial-gradient(ellipse at top left, rgba(207, 61, 61, 0.1) 0%, transparent 45%),
+    linear-gradient(160deg, #fffaf9 0%, #ffffff 60%);
   font-family: Arial, sans-serif;
 }
 
 .admin-shell {
-  max-width: 980px;
+  max-width: 680px;
   margin: 0 auto;
 }
 
+/* ── Header ───────────────────────────────────────────── */
 .admin-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 2rem;
 }
 
 .admin-header__eyebrow {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.4rem;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.13em;
   color: #cf3d3d;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
 }
 
 .admin-header h1 {
   margin: 0;
-  font-size: clamp(1.8rem, 3vw, 2.6rem);
-  color: #111111;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  color: #111;
+  line-height: 1.15;
 }
 
 .admin-header__subtitle {
-  margin: 0.45rem 0 0;
-  color: #5c5c5c;
+  margin: 0.4rem 0 0;
+  color: #6b6b6b;
+  font-size: 0.9rem;
 }
 
 .admin-header__back {
-  padding: 0.7rem 1rem;
+  flex-shrink: 0;
+  padding: 0.6rem 1.1rem;
   border-radius: 999px;
   text-decoration: none;
-  background: #111111;
+  background: #111;
   color: #fff;
+  font-size: 0.85rem;
   font-weight: 700;
-  white-space: nowrap;
+  transition: background 0.15s ease;
 }
 
+.admin-header__back:hover {
+  background: #333;
+}
+
+/* ── Feedback banners ─────────────────────────────────── */
 .feedback {
-  margin: 0 0 1rem;
-  padding: 0.9rem 1rem;
-  border-radius: 12px;
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
   font-weight: 600;
 }
 
@@ -278,122 +245,129 @@ const submitSchedule = async () => {
   border: 1px solid #f3c0c0;
 }
 
+/* ── Form card ────────────────────────────────────────── */
 .schedule-form {
   display: grid;
-  gap: 1rem;
+  gap: 1.25rem;
+  padding: 1.75rem;
+  border-radius: 20px;
+  background: #fff;
+  border: 1px solid #f0e4e4;
+  box-shadow:
+    0 2px 6px rgba(30, 30, 30, 0.04),
+    0 16px 40px rgba(30, 30, 30, 0.07);
 }
 
-.games-header,
-.game-card__header,
-.actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.games-header h2,
-.game-card h3 {
-  margin: 0;
-}
-
-.ghost-button,
-.primary-button {
-  border: 0;
-  border-radius: 999px;
-  padding: 0.75rem 1rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.ghost-button {
-  background: #f4f4f4;
-  color: #222;
-}
-
-.ghost-button--danger {
-  background: #fff1f1;
-  color: #a61b1b;
-}
-
-.primary-button {
-  background: #cf3d3d;
-  color: #fff;
-  padding-inline: 1.25rem;
-}
-
-.primary-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.game-card {
-  padding: 1rem;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid #f0dfdf;
-  box-shadow: 0 12px 30px rgba(30, 30, 30, 0.06);
-}
-
-.game-card__header {
-  margin-bottom: 0.9rem;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.9rem;
-}
-
+/* ── Field ────────────────────────────────────────────── */
 .field {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 
 .field span {
-  color: #4d4d4d;
-  font-size: 0.9rem;
+  color: #444;
+  font-size: 0.82rem;
   font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .field input,
 .field select {
   width: 100%;
-  border: 1px solid #d8d8d8;
-  border-radius: 12px;
-  padding: 0.85rem 0.95rem;
+  box-sizing: border-box;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
   font: inherit;
+  font-size: 0.95rem;
+  background: #fafafa;
+  color: #111;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.field input:hover,
+.field select:hover {
+  border-color: #c8c8c8;
   background: #fff;
 }
 
 .field input:focus,
 .field select:focus {
-  outline: 2px solid rgba(207, 61, 61, 0.2);
+  outline: none;
   border-color: #cf3d3d;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(207, 61, 61, 0.12);
+}
+
+/* ── 3-column grid for short fields ──────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .field--wide {
-  grid-column: span 2;
+  grid-column: span 3;
 }
 
-@media (max-width: 900px) {
+/* ── Divider between field groups ────────────────────── */
+.grid + .field,
+.grid {
+  margin-top: 0;
+}
+
+/* ── Submit row ───────────────────────────────────────── */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f3eded;
+}
+
+.primary-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.75rem 2rem;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: #cf3d3d;
+  color: #fff;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.primary-button:hover:not(:disabled) {
+  background: #b83333;
+}
+
+.primary-button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.primary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 600px) {
   .admin-page {
-    padding: 1rem;
+    padding: 1.25rem 1rem;
   }
 
-  .admin-header,
-  .games-header,
-  .game-card__header,
-  .actions {
+  .admin-header {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .admin-header__back,
-  .ghost-button,
-  .primary-button {
-    width: 100%;
+  .admin-header__back {
     text-align: center;
+  }
+
+  .schedule-form {
+    padding: 1.25rem;
   }
 
   .grid {
@@ -402,6 +376,15 @@ const submitSchedule = async () => {
 
   .field--wide {
     grid-column: span 1;
+  }
+
+  .actions {
+    justify-content: stretch;
+  }
+
+  .primary-button {
+    width: 100%;
+    text-align: center;
   }
 }
 </style>

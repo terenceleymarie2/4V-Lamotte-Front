@@ -1,14 +1,8 @@
-export interface Schedule {
+export interface CreateScheduleRequest {
     date: string;
-    games: Game[];
-}
-
-export interface Game {
-    id?: number;
     category: string;
     hour: string;
     field: string;
     teamA: string;
     teamB: string;
-    score: string;
 }
