@@ -40,7 +40,7 @@ const categories = [
     "Cadets 4",
     "Cadets 5",
     "Espoirs Elite",
-    "Espoits Féminines Elite",
+    "Espoirs Féminines Elite",
     "Espoirs 1",
     "Club Excellence Elite",
     "Club Excellence 1",
