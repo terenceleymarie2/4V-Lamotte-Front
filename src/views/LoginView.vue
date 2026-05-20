@@ -13,7 +13,7 @@ const submit = () => {
   if (password.value === 'azertyuiop') {
     sessionStorage.setItem('isAdmin', 'true');
     store.isAdmin = true;
-    router.push('/admin');
+    router.push('/');
   } else {
     error.value = 'Code d\'accès incorrect.';
     password.value = '';

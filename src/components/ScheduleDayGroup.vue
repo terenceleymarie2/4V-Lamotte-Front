@@ -11,13 +11,37 @@ const emit = defineEmits<{
   'delete-game': [id: number];
   'edit-game': [game: Game, scheduleDate: string];
 }>();
+
+const scoreClass = (score?: string) => {
+  if (!score) {
+    return '';
+  }
+
+  const matchedScore = score.match(/^(\d+)\s*-\s*(\d+)$/);
+  if (!matchedScore) {
+    return '';
+  }
+
+  const homeScore = Number(matchedScore[1]);
+  const awayScore = Number(matchedScore[2]);
+
+  if (homeScore > awayScore) {
+    return 'score-value--win';
+  }
+
+  if (homeScore < awayScore) {
+    return 'score-value--loss';
+  }
+
+  return 'score-value--draw';
+};
 </script>
 
 <template>
   <div>
     <div class="day-group__header">
       <h2 class="day-group__title">{{ formatDate(schedule.date) }}</h2>
-      <RouterLink class="add-btn" to="/admin">+ Ajouter</RouterLink>
+      <RouterLink v-if="isAdmin" class="add-btn" to="/admin">+ Ajouter</RouterLink>
     </div>
 
     <div v-if="schedule.games.length === 0" class="day-group__empty">
@@ -46,7 +70,7 @@ const emit = defineEmits<{
           <td>{{ game.field }}</td>
           <td>{{ game.teamA }}</td>
           <td>{{ game.teamB }}</td>
-          <td>{{ game.score || '-' }}</td>
+          <td class="score-value" :class="scoreClass(game.score)">{{ game.score || '-' }}</td>
           <td v-if="isAdmin" class="delete-cell">
             <button
               v-if="game.id != null"
@@ -132,7 +156,7 @@ const emit = defineEmits<{
           </div>
           <div>
             <dt>Score</dt>
-            <dd>{{ game.score || '-' }}</dd>
+            <dd class="score-value" :class="scoreClass(game.score)">{{ game.score || '-' }}</dd>
           </div>
         </dl>
       </article>
@@ -208,9 +232,25 @@ const emit = defineEmits<{
   background: #fff1f1;
 }
 
-.schedule-table td:last-child {
+.schedule-table td.delete-cell {
   font-weight: 600;
   color: #333;
+}
+
+.score-value {
+  font-weight: 700;
+}
+
+.score-value--win {
+  color: #1f8f4e;
+}
+
+.score-value--draw {
+  color: #111111;
+}
+
+.score-value--loss {
+  color: #c62828;
 }
 
 .desktop-only {
@@ -340,6 +380,18 @@ const emit = defineEmits<{
   color: #1f2f27;
   font-size: 0.9rem;
   font-weight: 600;
+}
+
+.match-card__details dd.score-value--win {
+  color: #1f8f4e;
+}
+
+.match-card__details dd.score-value--draw {
+  color: #111111;
+}
+
+.match-card__details dd.score-value--loss {
+  color: #c62828;
 }
 
 @media (max-width: 900px) {

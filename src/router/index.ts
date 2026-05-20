@@ -24,17 +24,15 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
   if (to.path === '/admin') {
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
-    if (isAdmin) {
-      next();
-    } else {
-      next('/login');
+    if (!isAdmin) {
+      return '/login';
     }
-  } else {
-    next();
   }
+
+  return true;
 });
 
 export default router;
