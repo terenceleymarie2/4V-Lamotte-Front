@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useSchedulesStore } from '../stores/schedules';
-import type { CreateScheduleRequest } from '../models/scheduleRemote';
 import { format, parse } from "date-fns";
 import { storeToRefs } from "pinia";
+import { computed, onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import type { CreateScheduleRequest } from '../models/scheduleRemote';
+import { useCategoriesStore } from "../stores/categories";
+import { useSchedulesStore } from '../stores/schedules';
 
 const router = useRouter();
 const scheduleStore = useSchedulesStore();
+const categoriesStore = useCategoriesStore();
 const isSaving = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
@@ -16,53 +18,8 @@ const errorMessage = ref('');
 const editId = ref<number | null>(null);
 const isEditMode = computed(() => editId.value !== null);
 
-const { selectedCompetition } = storeToRefs(scheduleStore);
-
-const categories = [
-    "Moustiques Elite",
-    "Poussins Elite",
-    "Poussins 1",
-    "Poussins 2",
-    "Poussins 3",
-    "Poussins 4",
-    "Benjamins Elite",
-    "Benjamins 1",
-    "Benjamins 2",
-    "Benjamins 3",
-    "Benjamins 4",
-    "Minimes Elite",
-    "Minimes 1",
-    "Minimes 2",
-    "Minimes 3",
-    "Minimes 4",
-    "Minimes 5",
-    "Cadets Elite",
-    "Cadets 1",
-    "Cadets 2",
-    "Cadets 3",
-    "Cadets 4",
-    "Cadets 5",
-    "Espoirs Elite",
-    "Espoirs Féminines Elite",
-    "Espoirs 1",
-    "Club Excellence Elite",
-    "Club Excellence 1",
-    "Club Excellence 2",
-    "Club Excellence 3",
-    "Club Excellence 4",
-    "Club Excellence 5",
-    "Club Excellence 6",
-    "Club Elite",
-    "Club 1",
-    "Club 2",
-    "Club 3",
-    "Club 4",
-    "Club 5",
-    "Club Feminine Elite",
-    "Coupe de France Neo 2 Minime Cadet",
-    "Coupe de France Mixte",
-    "Coupe de France Feminine"
-];
+const { selectedCompetition } = storeToRefs(categoriesStore);
+const categories = computed(() => categoriesStore.getCategoriesByCompetition());
 
 
 const createEmptyGame = (): CreateScheduleRequest => ({
@@ -159,7 +116,7 @@ const submitSchedule = async () => {
             <span>Catégorie</span>
             <select v-model="form.category">
               <option value="" disabled>Sélectionner une catégorie</option>
-              <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+              <option v-for="cat in categories" :key="cat.id" :value="cat.category">{{ cat.category }}</option>
             </select>
           </label>
 

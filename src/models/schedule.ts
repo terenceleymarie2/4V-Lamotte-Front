@@ -18,3 +18,9 @@ export interface Game {
     teamB: string;
     score: string;
 }
+
+export interface Category {
+    id: string;
+    competition: string;
+    category: string;
+}

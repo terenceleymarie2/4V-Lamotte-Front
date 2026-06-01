@@ -6,15 +6,17 @@ import type { Schedule } from '../models/schedule';
 import type { Game } from '../models/schedule';
 import ScheduleDayGroup from '../components/ScheduleDayGroup.vue';
 import { storeToRefs } from "pinia";
+import { useCategoriesStore } from "../stores/categories.ts";
 
 const router = useRouter();
 const scheduleStore = useSchedulesStore();
+const categoriesStore = useCategoriesStore();
 const schedules = computed<Schedule[]>(() => scheduleStore.schedules);
 const isAdmin = computed(() => scheduleStore.isAdmin);
 const loading = ref(true);
 const route = useRoute();
-const competition = computed<string>(() => (route.params.competition as string) || scheduleStore.defaultCompetition as unknown as string);
-const { selectedCompetition } = storeToRefs(scheduleStore);
+const competition = computed<string>(() => (route.params.competition as string) || categoriesStore.defaultCompetition as unknown as string);
+const { selectedCompetition } = storeToRefs(categoriesStore);
 
 const groupedSchedules = computed<Schedule[]>(() => {
   const toTimestamp = (date: string) => {
@@ -30,6 +32,7 @@ watch(
   async (newCompetition) => {
     loading.value = true;
     selectedCompetition.value = newCompetition;
+    await categoriesStore.fetchCategories();
     await scheduleStore.fetchSchedules();
     loading.value = false;
   },
