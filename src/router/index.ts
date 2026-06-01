@@ -2,10 +2,18 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import AdminView from '../views/AdminView.vue';
 import LoginView from '../views/LoginView.vue';
+import { useSchedulesStore } from "../stores/schedules.ts";
+import { storeToRefs } from "pinia";
+
+const defaultCompetition = storeToRefs(useSchedulesStore()).defaultCompetition;
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/',
+      redirect: `/${defaultCompetition.value}`,
+    },
     {
       path: '/:competition',
       name: 'home',
