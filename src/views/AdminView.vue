@@ -43,6 +43,7 @@ onMounted(() => {
     editId.value = target.id;
     Object.assign(form, {
       date: format(date, "yyyy-MM-dd"),
+      competition: selectedCompetition.value,
       category: target.category,
       hour: target.hour,
       field: target.field,
