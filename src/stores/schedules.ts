@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { type Schedule, type Game, CompetitionEnum } from '../models/schedule';
+import { type Game, type Schedule } from '../models/schedule';
 import type { CreateScheduleRequest, PatchScheduleRequest } from '../models/scheduleRemote';
+import { useCategoriesStore } from "./categories";
 
 const schedulesApiUrl = import.meta.env.VITE_API_URL;
 
@@ -11,6 +12,9 @@ export const useSchedulesStore = defineStore('schedules', () => {
   const isAdmin = ref(sessionStorage.getItem('isAdmin') === 'true');
   const editTarget = ref<(Game & { date: string }) | null>(null);
   
+  const categoriesStore = useCategoriesStore();
+  const selectedCompetition = ref(categoriesStore.defaultCompetition);
+
   async function fetchSchedules() {
     try {
       const response = await axios.get(`${schedulesApiUrl}/v2/schedules?competition=${selectedCompetition.value}`);
