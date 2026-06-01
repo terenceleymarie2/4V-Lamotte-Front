@@ -10,7 +10,7 @@ const password = ref('');
 const error = ref('');
 
 const submit = () => {
-  if (password.value === 'azertyuiop') {
+  if (password.value === "azertyuiop" || password.value === "crapaudestmondieu") {
     sessionStorage.setItem('isAdmin', 'true');
     store.isAdmin = true;
     router.push('/');
