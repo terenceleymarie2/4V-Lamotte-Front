@@ -12,7 +12,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: `/${defaultCompetition.value}`,
+      redirect: `/${defaultCompetition.value as unknown as string}`,
     },
     {
       path: '/:competition',
