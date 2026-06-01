@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useSchedulesStore } from '../stores/schedules';
 import type { Schedule } from '../models/schedule';
@@ -25,13 +25,16 @@ const groupedSchedules = computed<Schedule[]>(() => {
   return [...schedules.value].sort((a, b) => toTimestamp(a.date) - toTimestamp(b.date));
 });
 
-onMounted(() => {
-  loading.value = true;
-  selectedCompetition.value = competition.value;
-  scheduleStore.fetchSchedules().finally(() => {
+watch(
+  competition,
+  async (newCompetition) => {
+    loading.value = true;
+    selectedCompetition.value = newCompetition;
+    await scheduleStore.fetchSchedules();
     loading.value = false;
-  });
-});
+  },
+  { immediate: true }
+);
 
 const formatDate = (date: string) => {
   const parsedDate = new Date(date);
