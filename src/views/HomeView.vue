@@ -59,7 +59,7 @@ const handleEditGame = (game: Game, scheduleDate: string) => {
     <header class="page-header">
       <img src="/logo.png" alt="Logo" class="page-header__logo" />
       <div>
-        <h1>Matchs 4V - Lamotte Beuvron</h1>
+        <h1>Matchs 4V - {{ selectedCompetition }}</h1>
         <p class="page-header__subtitle">Planning des rencontres</p>
       </div>
     </header>
