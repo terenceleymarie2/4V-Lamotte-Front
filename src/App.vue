@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { CompetitionEnum } from "./models/schedule";
+import { useSchedulesStore } from "./stores/schedules";
 
 const route = useRoute();
 const isDesktopNavExpanded = ref(false);
@@ -9,7 +10,7 @@ const isDesktopNavExpanded = ref(false);
 const currentPath = computed(() => route.path);
 
 const navItems = [
-  { key: 'home', shortLabel: 'Acc.', label: 'Accueil', to: '/', isVisible: true },
+  { key: 'home', shortLabel: 'Acc.', label: 'Accueil', to: `/${useSchedulesStore().defaultCompetition as unknown as string}`, isVisible: true },
   { key: 'event', shortLabel: 'L26', label: 'Lamotte 2026', to: `/${CompetitionEnum._2026_LAMOTTE}`, isVisible: true },
   { key: 'event', shortLabel: 'C26', label: 'Cluny 2026', to: `/${CompetitionEnum._2026_CLUNY}`, isVisible: true },
   { key: 'event', shortLabel: 'J26', label: 'Jardy 2026', to: `/${CompetitionEnum._2026_JARDY}`, isVisible: true }, 
