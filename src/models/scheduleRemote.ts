@@ -1,5 +1,6 @@
 export interface CreateScheduleRequest {
     date: string;
+    competition: string;
     category: string;
     hour: string;
     field: string;
@@ -10,6 +11,7 @@ export interface CreateScheduleRequest {
 
 export interface PatchScheduleRequest {
     date?: string;
+    competition: string;
     category?: string;
     hour?: string;
     field?: string;

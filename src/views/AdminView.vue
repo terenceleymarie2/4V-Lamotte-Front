@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { useSchedulesStore } from '../stores/schedules';
 import type { CreateScheduleRequest } from '../models/scheduleRemote';
 import { format, parse } from "date-fns";
+import { storeToRefs } from "pinia";
 
 const router = useRouter();
 const scheduleStore = useSchedulesStore();
@@ -14,6 +15,8 @@ const errorMessage = ref('');
 // Edit mode: populated when coming from the pencil icon
 const editId = ref<number | null>(null);
 const isEditMode = computed(() => editId.value !== null);
+
+const { selectedCompetition } = storeToRefs(scheduleStore);
 
 const categories = [
     "Moustiques Elite",
@@ -64,6 +67,7 @@ const categories = [
 
 const createEmptyGame = (): CreateScheduleRequest => ({
   date: "",
+  competition: selectedCompetition.value,
   category: "",
   hour: "",
   field: "",

@@ -1,10 +1,13 @@
 import axios from 'axios';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { Schedule, Game } from '../models/schedule';
+import { type Schedule, type Game, CompetitionEnum } from '../models/schedule';
 import type { CreateScheduleRequest, PatchScheduleRequest } from '../models/scheduleRemote';
 
 const schedulesApiUrl = import.meta.env.VITE_API_URL;
+
+const defaultCompetition= CompetitionEnum._2026_CLUNY;
+const selectedCompetition = ref<string>(defaultCompetition as unknown as string);
 
 export const useSchedulesStore = defineStore('schedules', () => {
   const schedules = ref<Schedule[]>([]);
@@ -12,9 +15,8 @@ export const useSchedulesStore = defineStore('schedules', () => {
   const editTarget = ref<(Game & { date: string }) | null>(null);
   
   async function fetchSchedules() {
-    console.log("Fetching schedules...");
     try {
-      const response = await axios.get(`${schedulesApiUrl}/v2/schedules`);
+      const response = await axios.get(`${schedulesApiUrl}/v2/schedules?competition=${selectedCompetition.value}`);
       schedules.value = response.data;
     } catch (error) {
       console.error("Erreur de récupération des horaires :", error);
@@ -36,5 +38,5 @@ export const useSchedulesStore = defineStore('schedules', () => {
     await fetchSchedules();
   }
 
-  return { schedules, isAdmin, editTarget, fetchSchedules, createSchedule, deleteGame, patchGame };
+  return { defaultCompetition, selectedCompetition, schedules, isAdmin, editTarget, fetchSchedules, createSchedule, deleteGame, patchGame };
 });

@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { CompetitionEnum } from "./models/schedule";
 
 const route = useRoute();
 const isDesktopNavExpanded = ref(false);
 
 const currentPath = computed(() => route.path);
 
-const isAdmin = computed(() => sessionStorage.getItem('isAdmin') === 'true');
-
 const navItems = [
   { key: 'home', shortLabel: 'Acc.', label: 'Accueil', to: '/', isVisible: true },
-  { key: 'event', shortLabel: 'L26', label: 'Lamotte 2026', to: '/', isVisible: isAdmin },
+  { key: 'event', shortLabel: 'L26', label: 'Lamotte 2026', to: `/${CompetitionEnum._2026_LAMOTTE}`, isVisible: true },
+  { key: 'event', shortLabel: 'C26', label: 'Cluny 2026', to: `/${CompetitionEnum._2026_CLUNY}`, isVisible: true },
+  { key: 'event', shortLabel: 'J26', label: 'Jardy 2026', to: `/${CompetitionEnum._2026_JARDY}`, isVisible: true }, 
   { key: 'admin', shortLabel: 'Adm.', label: 'Espace Admin', to: '/login', isVisible: true },
 ];
 
@@ -21,7 +22,7 @@ const visibleNavItems = computed(() => {
       return item.isVisible;
     }
 
-    return item.isVisible.value;
+    return item.isVisible;
   });
 });
 

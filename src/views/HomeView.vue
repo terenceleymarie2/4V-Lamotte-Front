@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useSchedulesStore } from '../stores/schedules';
 import type { Schedule } from '../models/schedule';
 import type { Game } from '../models/schedule';
 import ScheduleDayGroup from '../components/ScheduleDayGroup.vue';
+import { storeToRefs } from "pinia";
 
 const router = useRouter();
 const scheduleStore = useSchedulesStore();
 const schedules = computed<Schedule[]>(() => scheduleStore.schedules);
 const isAdmin = computed(() => scheduleStore.isAdmin);
 const loading = ref(true);
+const route = useRoute();
+const competition = computed<string>(() => (route.params.competition as string) || scheduleStore.defaultCompetition as unknown as string);
+const { selectedCompetition } = storeToRefs(scheduleStore);
 
 const groupedSchedules = computed<Schedule[]>(() => {
   const toTimestamp = (date: string) => {
@@ -23,6 +27,7 @@ const groupedSchedules = computed<Schedule[]>(() => {
 
 onMounted(() => {
   loading.value = true;
+  selectedCompetition.value = competition.value;
   scheduleStore.fetchSchedules().finally(() => {
     loading.value = false;
   });
