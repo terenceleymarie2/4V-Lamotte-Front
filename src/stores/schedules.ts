@@ -6,9 +6,6 @@ import type { CreateScheduleRequest, PatchScheduleRequest } from '../models/sche
 
 const schedulesApiUrl = import.meta.env.VITE_API_URL;
 
-const defaultCompetition= CompetitionEnum._2026_CLUNY;
-const selectedCompetition = ref<string>(defaultCompetition as unknown as string);
-
 export const useSchedulesStore = defineStore('schedules', () => {
   const schedules = ref<Schedule[]>([]);
   const isAdmin = ref(sessionStorage.getItem('isAdmin') === 'true');
@@ -38,5 +35,5 @@ export const useSchedulesStore = defineStore('schedules', () => {
     await fetchSchedules();
   }
 
-  return { defaultCompetition, selectedCompetition, schedules, isAdmin, editTarget, fetchSchedules, createSchedule, deleteGame, patchGame };
+  return { schedules, isAdmin, editTarget, fetchSchedules, createSchedule, deleteGame, patchGame };
 });
