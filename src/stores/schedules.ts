@@ -4,6 +4,7 @@ import { ref } from 'vue';
 import { type Game, type Schedule } from '../models/schedule';
 import type { CreateScheduleRequest, PatchScheduleRequest } from '../models/scheduleRemote';
 import { useCategoriesStore } from "./categories";
+import { storeToRefs } from 'pinia';
 
 const schedulesApiUrl = import.meta.env.VITE_API_URL;
 
@@ -13,7 +14,7 @@ export const useSchedulesStore = defineStore('schedules', () => {
   const editTarget = ref<(Game & { date: string }) | null>(null);
   
   const categoriesStore = useCategoriesStore();
-  const selectedCompetition = ref(categoriesStore.defaultCompetition);
+  const { selectedCompetition } = storeToRefs(categoriesStore);
 
   async function fetchSchedules() {
     try {
