@@ -18,7 +18,7 @@ export const useSchedulesStore = defineStore('schedules', () => {
 
   async function fetchSchedules() {
     try {
-      const response = await axios.get(`${schedulesApiUrl}/v2/schedules?competition=${selectedCompetition.value}`);
+      const response = await axios.get(`${schedulesApiUrl}/schedules?competition=${selectedCompetition.value}`);
       schedules.value = response.data;
     } catch (error) {
       console.error("Erreur de récupération des horaires :", error);
@@ -26,17 +26,17 @@ export const useSchedulesStore = defineStore('schedules', () => {
   }
 
   async function createSchedule(schedule: CreateScheduleRequest) {
-    await axios.post(`${schedulesApiUrl}/v2/schedules`, schedule);
+    await axios.post(`${schedulesApiUrl}/schedules`, schedule);
     await fetchSchedules();
   }
 
   async function deleteGame(id: number) {
-    await axios.delete(`${schedulesApiUrl}/v2/schedules/${id}`);
+    await axios.delete(`${schedulesApiUrl}/schedules/${id}`);
     await fetchSchedules();
   }
 
   async function patchGame(id: number, data: PatchScheduleRequest) {
-    await axios.patch(`${schedulesApiUrl}/v2/schedules/${id}`, data);
+    await axios.patch(`${schedulesApiUrl}/schedules/${id}`, data);
     await fetchSchedules();
   }
 
