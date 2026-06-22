@@ -21,6 +21,7 @@ export interface Game {
 
 export interface Category {
     id: string;
+    date: string;
     competition: string;
     category: string;
 }

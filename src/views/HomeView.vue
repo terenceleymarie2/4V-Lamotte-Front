@@ -5,6 +5,7 @@ import { useSchedulesStore } from '../stores/schedules';
 import type { Schedule } from '../models/schedule';
 import type { Game } from '../models/schedule';
 import ScheduleDayGroup from '../components/ScheduleDayGroup.vue';
+import FloatingActionButton from '../components/FloatingActionButton.vue';
 import { storeToRefs } from "pinia";
 import { useCategoriesStore } from "../stores/categories.ts";
 
@@ -88,6 +89,8 @@ const handleEditGame = (game: Game, scheduleDate: string) => {
         @edit-game="handleEditGame"
       />
     </section>
+
+    <FloatingActionButton v-if="isAdmin" to="/admin" title="Ajouter un match" />
   </main>
 </template>
 

@@ -9,7 +9,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: "/2026_Cluny",
+      redirect: "/2026_Jardy",
     },
     {
       path: '/:competition',

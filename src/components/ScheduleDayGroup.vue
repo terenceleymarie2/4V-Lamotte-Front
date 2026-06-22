@@ -19,7 +19,6 @@ const emit = defineEmits<{
   <div>
     <div class="day-group__header">
       <h2 class="day-group__title">{{ formatDate(schedule.date) }}</h2>
-      <RouterLink v-if="isAdmin" class="add-btn" to="/admin">+ Ajouter</RouterLink>
     </div>
 
     <div v-if="schedule.games.length === 0" class="day-group__empty">
@@ -64,22 +63,6 @@ const emit = defineEmits<{
   margin: 0;
   color: #d10000;
   font-size: 1.15rem;
-}
-
-.add-btn {
-  flex-shrink: 0;
-  padding: 0.35rem 0.85rem;
-  border-radius: 999px;
-  background: #cf3d3d;
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition: background 0.15s ease;
-}
-
-.add-btn:hover {
-  background: #b83333;
 }
 
 .day-group__empty {
