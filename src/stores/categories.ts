@@ -30,7 +30,14 @@ export const useCategoriesStore = defineStore("categories", () => {
     try {
       const response = await axios.get(`${schedulesApiUrl}/categories`);
       categories.value = response.data;
-      selectedCompetition.value = getDefaultCompetition();
+
+      const hasSelectedCompetition = categories.value.some(
+        (category) => category.competition === selectedCompetition.value,
+      );
+
+      if (!hasSelectedCompetition) {
+        selectedCompetition.value = getDefaultCompetition();
+      }
     } catch (error) {
       console.error("Erreur de récupération des categories :", error);
     }

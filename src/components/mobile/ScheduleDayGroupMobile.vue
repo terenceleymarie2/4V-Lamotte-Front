@@ -139,6 +139,9 @@
     margin: 0;
     font-size: 1rem;
     color: #163528;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .match-card__details {
@@ -146,7 +149,7 @@
     display: flex;
     align-items: center;
     gap: 0.45rem;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     width: 100%;
 }
 
@@ -158,8 +161,8 @@
     display: inline-flex;
     align-items: baseline;
     gap: 0.3rem;
-    white-space: nowrap;
-    flex: 1 1 0;
+    white-space: normal;
+    flex: 1 1 8rem;
     min-width: 0;
     justify-content: center;
 }
@@ -177,6 +180,8 @@
     color: #1f2f27;
     font-size: 0.9rem;
     font-weight: 600;
+    overflow-wrap: anywhere;
+    text-align: center;
 }
 
 .match-card__details dd.score-value--win {
@@ -205,6 +210,30 @@
 
 .score-value--loss {
     color: #c62828;
+}
+
+@media (max-width: 640px) {
+    .match-card__details {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .match-card__details div {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+    }
+
+    .match-card__details dd {
+        text-align: left;
+    }
+}
+
+@media (max-width: 380px) {
+    .match-card__details {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 </style>

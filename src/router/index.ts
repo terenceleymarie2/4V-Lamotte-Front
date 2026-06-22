@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AdminView from '../views/AdminView.vue';
+import CompetitionsView from '../views/CompetitionsView.vue';
 import HomeView from '../views/HomeView.vue';
 import LoginView from '../views/LoginView.vue';
 
@@ -10,6 +11,11 @@ const router = createRouter({
     {
       path: '/',
       redirect: "/2026_Jardy",
+    },
+    {
+      path: '/competitions',
+      name: 'competitions',
+      component: CompetitionsView,
     },
     {
       path: '/:competition',

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { CompetitionEnum } from "./models/schedule";
 import { useCategoriesStore } from "./stores/categories";
 
 const route = useRoute();
@@ -11,9 +10,7 @@ const currentPath = computed(() => route.path);
 
 const navItems = [
   { key: 'home', shortLabel: 'Acc.', label: 'Accueil', to: `/${useCategoriesStore().defaultCompetition as unknown as string}`, isVisible: true },
-  { key: 'event', shortLabel: 'L26', label: 'Lamotte 2026', to: `/${CompetitionEnum._2026_LAMOTTE}`, isVisible: true },
-  { key: 'event', shortLabel: 'C26', label: 'Cluny 2026', to: `/${CompetitionEnum._2026_CLUNY}`, isVisible: true },
-  { key: 'event', shortLabel: 'J26', label: 'Jardy 2026', to: `/${CompetitionEnum._2026_JARDY}`, isVisible: true }, 
+  { key: 'competitions', shortLabel: 'Comp.', label: 'Competitions', to: '/competitions', isVisible: true },
   { key: 'admin', shortLabel: 'Adm.', label: 'Espace Admin', to: '/login', isVisible: true },
 ];
 
@@ -61,7 +58,7 @@ const toggleDesktopNav = () => {
               <path d="M3 11.5L12 4l9 7.5" />
               <path d="M6 10.5V20h12v-9.5" />
             </svg>
-            <svg v-else-if="item.key === 'event'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg v-else-if="item.key === 'competitions'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="5" width="18" height="16" rx="2" />
               <path d="M16 3v4M8 3v4M3 10h18" />
             </svg>
@@ -237,9 +234,10 @@ const toggleDesktopNav = () => {
   justify-content: center;
   text-align: center;
   padding: 0.62rem 0.35rem;
-  font-size: 0.84rem;
+  font-size: 0.78rem;
   min-height: 2.35rem;
-  white-space: nowrap;
+  white-space: normal;
+  line-height: 1.1;
 }
 
 @media (hover: none) {

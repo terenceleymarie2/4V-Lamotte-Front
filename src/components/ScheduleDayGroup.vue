@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Schedule, Game } from '../models/schedule';
-import ScheduleDayGroupDesktop from './mobile/ScheduleDayGroupDesktop.vue';
+import ScheduleDayGroupDesktop from './desktop/ScheduleDayGroupDesktop.vue';
 import ScheduleDayGroupMobile from './mobile/ScheduleDayGroupMobile.vue';
 
 defineProps<{
