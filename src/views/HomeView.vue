@@ -8,8 +8,6 @@ import ScheduleDayGroup from '../components/ScheduleDayGroup.vue';
 import FloatingActionButton from '../components/FloatingActionButton.vue';
 import { storeToRefs } from "pinia";
 import { useCategoriesStore } from "../stores/categories.ts";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 
 const router = useRouter();
 const scheduleStore = useSchedulesStore();
@@ -45,13 +43,6 @@ onMounted(async () => {
     await categoriesStore.fetchCategories();
 });
 
-const formatDate = (date: string) => {
-  const parsedDate = new Date(date);
-  if (Number.isNaN(parsedDate.getTime())) return date;
-
-  return `${date} / ${parsedDate} / ${format(parsedDate, "EEE. dd/MM/yyyy", {locale: fr})}`;
-};
-
 const handleEditGame = (game: Game, scheduleDate: string) => {
   scheduleStore.editTarget = { ...game, date: scheduleDate };
   router.push('/admin');
@@ -80,7 +71,6 @@ const handleEditGame = (game: Game, scheduleDate: string) => {
     >
       <ScheduleDayGroup
         :schedule="schedule"
-        :format-date="formatDate"
         :is-admin="isAdmin"
         @delete-game="scheduleStore.deleteGame"
         @edit-game="handleEditGame"

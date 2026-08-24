@@ -5,7 +5,6 @@ import ScheduleDayGroupMobile from './mobile/ScheduleDayGroupMobile.vue';
 
 defineProps<{
   schedule: Schedule;
-  formatDate: (date: string) => string;
   isAdmin?: boolean;
 }>();
 
@@ -18,7 +17,7 @@ const emit = defineEmits<{
 <template>
   <div>
     <div class="day-group__header">
-      <h2 class="day-group__title">{{ formatDate(schedule.date) }}</h2>
+      <h2 class="day-group__title">{{ schedule.date }}</h2>
     </div>
 
     <div v-if="schedule.games.length === 0" class="day-group__empty">
