@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router';
 import type { CreateScheduleRequest } from '../models/scheduleRemote';
 import { useCategoriesStore } from "../stores/categories";
 import { useSchedulesStore } from '../stores/schedules';
+import { fr } from "date-fns/locale";
 
 const router = useRouter();
 const scheduleStore = useSchedulesStore();
@@ -39,8 +40,7 @@ const form = reactive<CreateScheduleRequest>({
 onMounted(() => {
   const target = scheduleStore.editTarget;
   if (target?.id != null) {
-    console.log("date", target.date);
-    const date = parse(target.date, "EEE dd/MM/yyyy", new Date());
+    const date = parse(target.date, "EEE dd/MM/yyyy", new Date(), { locale: fr });
     editId.value = target.id;
     Object.assign(form, {
       date: format(date, "yyyy-MM-dd"),
