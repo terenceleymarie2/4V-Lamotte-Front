@@ -8,6 +8,8 @@ import ScheduleDayGroup from '../components/ScheduleDayGroup.vue';
 import FloatingActionButton from '../components/FloatingActionButton.vue';
 import { storeToRefs } from "pinia";
 import { useCategoriesStore } from "../stores/categories.ts";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 const router = useRouter();
 const scheduleStore = useSchedulesStore();
@@ -47,12 +49,7 @@ const formatDate = (date: string) => {
   const parsedDate = new Date(date);
   if (Number.isNaN(parsedDate.getTime())) return date;
 
-  return parsedDate.toLocaleDateString('fr-FR', {
-    weekday: 'short',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
+  return format(parsedDate, "EEE. dd/MM/yyyy", {locale: fr});
 };
 
 const handleEditGame = (game: Game, scheduleDate: string) => {
