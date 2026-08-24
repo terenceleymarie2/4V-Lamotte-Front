@@ -39,6 +39,7 @@ const form = reactive<CreateScheduleRequest>({
 onMounted(() => {
   const target = scheduleStore.editTarget;
   if (target?.id != null) {
+    console.log("date", target.date);
     const date = parse(target.date, "EEE dd/MM/yyyy", new Date());
     editId.value = target.id;
     Object.assign(form, {
