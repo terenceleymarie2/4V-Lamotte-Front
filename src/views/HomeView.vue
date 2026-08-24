@@ -49,7 +49,7 @@ const formatDate = (date: string) => {
   const parsedDate = new Date(date);
   if (Number.isNaN(parsedDate.getTime())) return date;
 
-  return format(parsedDate, "EEE. dd/MM/yyyy", {locale: fr});
+  return `${date} / ${parsedDate} / ${format(parsedDate, "EEE. dd/MM/yyyy", {locale: fr})}`;
 };
 
 const handleEditGame = (game: Game, scheduleDate: string) => {
